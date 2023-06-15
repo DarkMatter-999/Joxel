@@ -17,6 +17,7 @@ public class Joxel implements Runnable {
 	public void init() {
 		 System.out.println("Init gameloop");
 		 window = new Window(WIDTH, HEIGHT, "Joxel");
+		 window.setBGColor(0.4f, 0.7f, 1.0f);
 		 window.create();
 	}
 
@@ -28,6 +29,8 @@ public class Joxel implements Runnable {
 			render();
 			if(Input.isKeyDown(GLFW.GLFW_KEY_ESCAPE)) {
 				break;
+			} else if(Input.isKeyDown(GLFW.GLFW_KEY_F11)) {
+				window.toggleFullscreen();
 			}
 		}
 		window.destroy();
