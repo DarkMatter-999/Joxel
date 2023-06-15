@@ -1,4 +1,7 @@
+import org.lwjgl.glfw.GLFW;
+
 import dm.joxel.Engine.Window;
+import dm.joxel.Engine.Input;
 
 public class Joxel implements Runnable {
 	public Thread game;
@@ -23,13 +26,19 @@ public class Joxel implements Runnable {
 		while(!window.shouldClose()) {
 			update();
 			render();
+			if(Input.isKeyDown(GLFW.GLFW_KEY_ESCAPE)) {
+				break;
+			}
 		}
+		window.destroy();
 		
 	}
 
 	public void update() {
 		 // System.out.println("Update");
 		 window.update();
+		 if (Input.isButtonDown(GLFW.GLFW_MOUSE_BUTTON_LEFT)) System.out.println("LEFT: X: " + Input.getMouseX() + " Y: " + Input.getMouseY());
+		 if (Input.isButtonDown(GLFW.GLFW_MOUSE_BUTTON_RIGHT)) System.out.println("RIGHT: X: " + Input.getMouseX() + " Y: " + Input.getMouseY());
 	}
 
 	public void render() {
@@ -38,7 +47,7 @@ public class Joxel implements Runnable {
 	}
 
 	public static void main(String[] args) {
-		new Joxel().start();
 		System.out.println("Joxel");
+		new Joxel().start();
 	}
 }

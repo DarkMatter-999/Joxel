@@ -18,7 +18,8 @@ public class Window {
 	private String title;
 	private long window;
 	private int frames;
-	private static long time; 
+	private static long time;
+	public Input input;
 
 	public Window(int width, int height, String title) {
 		this.width = width;
@@ -42,9 +43,15 @@ public class Window {
 			System.err.println("Window wasn't created");
 		}
 
+		input = new Input();
+
 		GLFWVidMode vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 		glfwSetWindowPos(window, (vidMode.width() - width) / 2, (vidMode.height() - height) / 2);
 		glfwMakeContextCurrent(window);
+
+		glfwSetKeyCallback(window, input.getKeyboardCallback());
+		glfwSetCursorPosCallback(window, input.getMouseMoveCallback());
+		glfwSetMouseButtonCallback(window, input.getMouseButtonsCallback());
 
 		glfwShowWindow(window);
 
@@ -71,5 +78,12 @@ public class Window {
 
 	public boolean shouldClose() {
 		return glfwWindowShouldClose(window);
+	}
+
+	public void destroy() {
+		input.destroy();
+		glfwWindowShouldClose(window);
+		glfwDestroyWindow(window);
+		glfwTerminate();
 	}
 }
