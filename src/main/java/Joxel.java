@@ -6,6 +6,7 @@ import dm.joxel.Graphics.Renderer;
 import dm.joxel.Graphics.Shader;
 import dm.joxel.Graphics.Vertex;
 import dm.joxel.Maths.Vector3f;
+import dm.joxel.Objects.GameObject;
 import dm.joxel.Maths.Vector2f;
 import dm.joxel.Engine.Input;
 import dm.joxel.Graphics.Material;
@@ -26,6 +27,8 @@ public class Joxel implements Runnable {
 			0, 1, 2,
 			0, 3, 2
 	}, new Material("resources/Textures/dirt.png"));
+
+	public GameObject gameObject = new GameObject(mesh, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
 
 	public void start() {
 		game = new Thread(this, "Game");
@@ -73,10 +76,12 @@ public class Joxel implements Runnable {
 		 window.update();
 		 if (Input.isButtonDown(GLFW.GLFW_MOUSE_BUTTON_LEFT)) System.out.println("LEFT: X: " + Input.getMouseX() + " Y: " + Input.getMouseY());
 		 if (Input.isButtonDown(GLFW.GLFW_MOUSE_BUTTON_RIGHT)) System.out.println("RIGHT: X: " + Input.getMouseX() + " Y: " + Input.getMouseY());
+
+		 gameObject.update();
 	}
 
 	public void render() {
-		renderer.renderMesh(mesh);
+		 renderer.renderMesh(gameObject);
 		 // System.out.println("Render");
 		 window.swapBuffers();
 	}

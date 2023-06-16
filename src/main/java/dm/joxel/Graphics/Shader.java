@@ -1,9 +1,14 @@
 package dm.joxel.Graphics;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.system.MemoryUtil;
+
+import java.nio.*;
 
 import dm.joxel.Utils.FileUtils;
+import dm.joxel.Maths.*;
 
 public class Shader {
 	private String vertexFile, fragmentFile;
@@ -50,18 +55,53 @@ public class Shader {
 			System.err.println("Program Validation: " + GL20.glGetProgramInfoLog(programId));
 			return;
 		}
-		
-		GL20.glDeleteShader(vertexId);
-		GL20.glDeleteShader(fragmentId);
 	}
+
+	public int getUniformLocation(String name) {
+		return GL20.glGetUniformLocation(programId, name);
+	}
+
+	public void setUniform(String name, float value) {
+		GL20.glUniform1f(getUniformLocation(name), value);
+	}
+	
+	public void setUniform(String name, int value) {
+		GL20.glUniform1i(getUniformLocation(name), value);
+	}
+	
+	public void setUniform(String name, boolean value) {
+		GL20.glUniform1i(getUniformLocation(name), value ? 1 : 0);
+	}
+	
+	public void setUniform(String name, Vector2f value) {
+		GL20.glUniform2f(getUniformLocation(name), value.x, value.y);
+	}
+	
+	public void setUniform(String name, Vector3f value) {
+		GL20.glUniform3f(getUniformLocation(name), value.x, value.y, value.z);
+	}
+	
+	public void setUniform(String name, Matrix4f value) {
+		FloatBuffer matrix = MemoryUtil.memAllocFloat(Matrix4f.SIZE * Matrix4f.SIZE);
+		matrix.put(value.getAll()).flip();
+		GL20.glUniformMatrix4fv(getUniformLocation(name), true, matrix);
+	}	
 
 	public void bind() {
 		GL20.glUseProgram(programId);
 	}
+
 	public void unbind() {
 		GL20.glUseProgram(0);
 	}
+
 	public void destroy() {
+		GL20.glDetachShader(programId, vertexId);
+		GL20.glDetachShader(programId, fragmentId);
+
+		GL20.glDeleteShader(vertexId);
+		GL20.glDeleteShader(fragmentId);
+
 		GL20.glDeleteProgram(programId);
 	}
 }
