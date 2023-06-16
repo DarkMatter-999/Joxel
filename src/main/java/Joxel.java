@@ -1,12 +1,29 @@
 import org.lwjgl.glfw.GLFW;
 
 import dm.joxel.Engine.Window;
+import dm.joxel.Graphics.Mesh;
+import dm.joxel.Graphics.Renderer;
+import dm.joxel.Graphics.Shader;
+import dm.joxel.Graphics.Vertex;
+import dm.joxel.Maths.Vector3f;
 import dm.joxel.Engine.Input;
 
 public class Joxel implements Runnable {
 	public Thread game;
 	public static Window window;
 	public final int WIDTH = 1280, HEIGHT = 720;
+	public Shader shader;
+
+	public Renderer renderer;
+	public Mesh mesh = new Mesh(new Vertex[] {
+			new Vertex(new Vector3f(-0.5f,  0.5f, 0.0f)),
+			new Vertex(new Vector3f(-0.5f, -0.5f, 0.0f)),
+			new Vertex(new Vector3f( 0.5f, -0.5f, 0.0f)),
+			new Vertex(new Vector3f( 0.5f,  0.5f, 0.0f))
+		}, new int[] {
+			0, 1, 2,
+			0, 3, 2
+	});
 
 	public void start() {
 		game = new Thread(this, "Game");
@@ -19,6 +36,12 @@ public class Joxel implements Runnable {
 		 window = new Window(WIDTH, HEIGHT, "Joxel");
 		 window.setBGColor(0.4f, 0.7f, 1.0f);
 		 window.create();
+
+		 shader = new Shader("resources/mainVertex.glsl","resources/mainFragment.glsl");
+
+		 renderer = new Renderer(shader);
+		 mesh.create();
+		 shader.create();
 	}
 
 	public void run() {
@@ -45,6 +68,7 @@ public class Joxel implements Runnable {
 	}
 
 	public void render() {
+		renderer.renderMesh(mesh);
 		 // System.out.println("Render");
 		 window.swapBuffers();
 	}
