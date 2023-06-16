@@ -16,10 +16,10 @@ public class Joxel implements Runnable {
 
 	public Renderer renderer;
 	public Mesh mesh = new Mesh(new Vertex[] {
-			new Vertex(new Vector3f(-0.5f,  0.5f, 0.0f)),
-			new Vertex(new Vector3f(-0.5f, -0.5f, 0.0f)),
-			new Vertex(new Vector3f( 0.5f, -0.5f, 0.0f)),
-			new Vertex(new Vector3f( 0.5f,  0.5f, 0.0f))
+			new Vertex(new Vector3f(-0.5f,  0.5f, 0.0f), new Vector3f(1.0f, 0.0f, 0.0f)),
+			new Vertex(new Vector3f(-0.5f, -0.5f, 0.0f), new Vector3f(0.0f, 1.0f, 0.0f)),
+			new Vertex(new Vector3f( 0.5f, -0.5f, 0.0f), new Vector3f(0.0f, 0.0f, 1.0f)),
+			new Vertex(new Vector3f( 0.5f,  0.5f, 0.0f), new Vector3f(1.0f, 1.0f, 1.0f))
 		}, new int[] {
 			0, 1, 2,
 			0, 3, 2
@@ -56,8 +56,14 @@ public class Joxel implements Runnable {
 				window.toggleFullscreen();
 			}
 		}
-		window.destroy();
 		
+		close();
+	}
+
+	private void close() {
+		window.destroy();
+		mesh.destroy();
+		shader.destroy();
 	}
 
 	public void update() {
