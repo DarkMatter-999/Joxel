@@ -6,7 +6,9 @@ import dm.joxel.Graphics.Renderer;
 import dm.joxel.Graphics.Shader;
 import dm.joxel.Graphics.Vertex;
 import dm.joxel.Maths.Vector3f;
+import dm.joxel.Maths.Vector2f;
 import dm.joxel.Engine.Input;
+import dm.joxel.Graphics.Material;
 
 public class Joxel implements Runnable {
 	public Thread game;
@@ -16,14 +18,14 @@ public class Joxel implements Runnable {
 
 	public Renderer renderer;
 	public Mesh mesh = new Mesh(new Vertex[] {
-			new Vertex(new Vector3f(-0.5f,  0.5f, 0.0f), new Vector3f(1.0f, 0.0f, 0.0f)),
-			new Vertex(new Vector3f(-0.5f, -0.5f, 0.0f), new Vector3f(0.0f, 1.0f, 0.0f)),
-			new Vertex(new Vector3f( 0.5f, -0.5f, 0.0f), new Vector3f(0.0f, 0.0f, 1.0f)),
-			new Vertex(new Vector3f( 0.5f,  0.5f, 0.0f), new Vector3f(1.0f, 1.0f, 1.0f))
+			new Vertex(new Vector3f(-0.5f,  0.5f, 0.0f), new Vector3f(1.0f, 0.0f, 0.0f), new Vector2f(0.0f, 0.0f)),
+			new Vertex(new Vector3f(-0.5f, -0.5f, 0.0f), new Vector3f(0.0f, 1.0f, 0.0f), new Vector2f(0.0f, 1.0f)),
+			new Vertex(new Vector3f( 0.5f, -0.5f, 0.0f), new Vector3f(0.0f, 0.0f, 1.0f), new Vector2f(1.0f, 1.0f)),
+			new Vertex(new Vector3f( 0.5f,  0.5f, 0.0f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector2f(1.0f, 0.0f))
 		}, new int[] {
 			0, 1, 2,
 			0, 3, 2
-	});
+	}, new Material("resources/Textures/dirt.png"));
 
 	public void start() {
 		game = new Thread(this, "Game");
@@ -37,7 +39,7 @@ public class Joxel implements Runnable {
 		 window.setBGColor(0.4f, 0.7f, 1.0f);
 		 window.create();
 
-		 shader = new Shader("resources/mainVertex.glsl","resources/mainFragment.glsl");
+		 shader = new Shader("resources/Shaders/mainVertex.glsl","resources/Shaders/mainFragment.glsl");
 
 		 renderer = new Renderer(shader);
 		 mesh.create();
