@@ -29,22 +29,23 @@ public class Matrix4f {
 	}
 	
 	public static Matrix4f rotate(float angle, Vector3f axis) {
-		Matrix4f res = Matrix4f.identity();
+		Matrix4f result = Matrix4f.identity();
+		
 		float cos = (float) Math.cos(Math.toRadians(angle));
 		float sin = (float) Math.sin(Math.toRadians(angle));
 		float C = 1 - cos;
 		
-		res.set(0, 0, cos + axis.x * axis.x * C);
-		res.set(0, 1, axis.x * axis.y * C - axis.z * sin);
-		res.set(0, 2, axis.x * axis.z * C + axis.y * sin);
-		res.set(1, 0, axis.y * axis.x * C + axis.z * sin);
-		res.set(1, 1, cos + axis.y * axis.y * C);
-		res.set(1, 2, axis.y * axis.z * C - axis.x * sin);
-		res.set(2, 0, axis.z * axis.x * C - axis.y * sin);
-		res.set(2, 1, axis.z * axis.y * C + axis.x * sin);
-		res.set(2, 2, cos + axis.z * axis.z * C);
-
-		return res;		
+		result.set(0, 0, cos + axis.x * axis.x * C);
+		result.set(0, 1, axis.x * axis.y * C - axis.z * sin);
+		result.set(0, 2, axis.x * axis.z * C + axis.y * sin);
+		result.set(1, 0, axis.y * axis.x * C + axis.z * sin);
+		result.set(1, 1, cos + axis.y * axis.y * C);
+		result.set(1, 2, axis.y * axis.z * C - axis.x * sin);
+		result.set(2, 0, axis.z * axis.x * C - axis.y * sin);
+		result.set(2, 1, axis.z * axis.y * C + axis.x * sin);
+		result.set(2, 2, cos + axis.z * axis.z * C);
+		
+		return result;
 	}
 
 	public static Matrix4f scale(Vector3f scalar) {
@@ -125,8 +126,8 @@ public class Matrix4f {
 		Matrix4f rotYMatrix = Matrix4f.rotate(rotation.y, new Vector3f(0, 1, 0));
 		Matrix4f rotZMatrix = Matrix4f.rotate(rotation.z, new Vector3f(0, 0, 1));
 		
-		Matrix4f rotationMatrix = Matrix4f.multiply(rotXMatrix, Matrix4f.multiply(rotYMatrix, rotZMatrix));
-		
+		Matrix4f rotationMatrix = Matrix4f.multiply(rotYMatrix, Matrix4f.multiply(rotZMatrix, rotXMatrix));
+
 		result = Matrix4f.multiply(translationMatrix, rotationMatrix);
 		
 		return result;

@@ -13,6 +13,12 @@ public class Vertex {
 		this.textureCoords = textureCoords;
 	}
 
+	public Vertex(Vector3f position, Vector2f textureCoords) {
+		this.position = position;
+		this.color = new Vector3f(1.0f, 1.0f, 1.0f);
+		this.textureCoords = textureCoords;
+	}
+
 	public Vector3f getPosition() {
 		return position;
 	}
