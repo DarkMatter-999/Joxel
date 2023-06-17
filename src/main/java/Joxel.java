@@ -63,6 +63,8 @@ public class Joxel implements Runnable {
 			} else if(Input.isKeyDown(GLFW.GLFW_KEY_F11)) {
 				window.toggleFullscreen();
 			}
+			if(Input.isKeyDown(GLFW.GLFW_KEY_E)) window.mouseState(true);
+			if(Input.isKeyDown(GLFW.GLFW_KEY_Q)) window.mouseState(false);
 		}
 		
 		close();

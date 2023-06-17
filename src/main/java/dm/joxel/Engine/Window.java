@@ -109,6 +109,10 @@ public class Window {
 
 	}
 
+	public void mouseState(boolean lock) {
+		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, lock ? GLFW.GLFW_CURSOR_DISABLED : GLFW.GLFW_CURSOR_NORMAL);
+	}
+
 	public void swapBuffers() {
 		glfwSwapBuffers(window);
 	}
