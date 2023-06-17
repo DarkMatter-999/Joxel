@@ -1,6 +1,6 @@
 package dm.joxel.Maths;
 
-import org.joml.Math;
+import java.util.Arrays;
 
 public class Matrix4f {
 	public static final int SIZE = 4;
@@ -21,9 +21,9 @@ public class Matrix4f {
 
 	public static Matrix4f translate(Vector3f translation) {
 		Matrix4f res = Matrix4f.identity();
-		res.set(0,3, translation.x);
-		res.set(1,3, translation.y);
-		res.set(2,3, translation.z);
+		res.set(3,0, translation.x);
+		res.set(3,1, translation.y);
+		res.set(3,2, translation.z);
 
 		return res;
 	}
@@ -95,5 +95,62 @@ public class Matrix4f {
 		result = Matrix4f.multiply(translationMatrix, Matrix4f.multiply(rotationMatrix, scaleMatrix));
 		
 		return result;
+	}
+
+	public static Matrix4f perspective(float fov, float aspect, float near, float far) {
+		Matrix4f res = Matrix4f.identity();
+
+		float tanFOV = (float) Math.tan(Math.toRadians(fov/2));
+
+		float zp = far + near;
+		float zm = far - near;
+
+		res.set(0,0, 1.0f / (aspect * tanFOV));
+		res.set(1,1, 1 / (tanFOV));
+		res.set(2,2, -( zp / zm ));
+		res.set(3,3, 0.0f);
+		res.set(2,3, -1.0f);
+		res.set(3,2, - ((2.0f * far * near)/zm));
+
+		return res; 
+	}
+
+	public static Matrix4f view(Vector3f position, Vector3f rotation) {
+		Matrix4f result = Matrix4f.identity();
+		
+		Vector3f negposition = new Vector3f(-position.x, -position.y, -position.z);
+
+		Matrix4f translationMatrix = Matrix4f.translate(negposition);
+		Matrix4f rotXMatrix = Matrix4f.rotate(rotation.x, new Vector3f(1, 0, 0));
+		Matrix4f rotYMatrix = Matrix4f.rotate(rotation.y, new Vector3f(0, 1, 0));
+		Matrix4f rotZMatrix = Matrix4f.rotate(rotation.z, new Vector3f(0, 0, 1));
+		
+		Matrix4f rotationMatrix = Matrix4f.multiply(rotXMatrix, Matrix4f.multiply(rotYMatrix, rotZMatrix));
+		
+		result = Matrix4f.multiply(translationMatrix, rotationMatrix);
+		
+		return result;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(element);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Matrix4f other = (Matrix4f) obj;
+		if (!Arrays.equals(element, other.element))
+			return false;
+		return true;
 	}
 }

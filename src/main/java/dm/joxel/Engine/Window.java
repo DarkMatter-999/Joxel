@@ -16,7 +16,7 @@ import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
 public class Window {
-	private int width, height;
+	public int width, height;
 	private String title;
 	private long window;
 	private int frames;

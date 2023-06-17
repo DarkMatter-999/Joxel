@@ -5,17 +5,22 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL30;
 
+import dm.joxel.Objects.Camera;
 import dm.joxel.Objects.GameObject;
+import dm.joxel.Engine.Window;
 import dm.joxel.Maths.Matrix4f;
 
 public class Renderer {
 	private Shader shader;
+	private Window window;
+	private float fov = 70.0f;
 
-	public Renderer(Shader shader) {
+	public Renderer(Shader shader, Window window) {
 		this.shader = shader;
+		this.window = window;
 	}
 
-	public void renderMesh(GameObject gameObject) {
+	public void renderMesh(GameObject gameObject, Camera camera) {
 		GL30.glBindVertexArray(gameObject.getMesh().getVAO());
 		GL30.glEnableVertexAttribArray(0);
 		GL30.glEnableVertexAttribArray(1);
@@ -27,6 +32,8 @@ public class Renderer {
 
 		shader.bind();
 		shader.setUniform("model", Matrix4f.transform(gameObject.position, gameObject.rotation, gameObject.scale));
+		shader.setUniform("view", Matrix4f.view(camera.getPosition(), camera.getRotation()));
+		shader.setUniform("projection", Matrix4f.perspective(fov, (float) window.width / (float) window.height, 0.1f, 1000.0f));
 		GL11.glDrawElements(GL11.GL_TRIANGLES, gameObject.mesh.getIndices().length, GL11.GL_UNSIGNED_INT, 0);
 		shader.unbind();
 

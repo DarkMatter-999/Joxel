@@ -15,7 +15,7 @@ public class GameObject {
 	}
 
 	public void update() {
-		position.add(0.01f, 0.0f, 0.0f);
+		
 	}
 
 	public Vector3f getPosition() {
