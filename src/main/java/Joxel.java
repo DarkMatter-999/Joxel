@@ -11,79 +11,25 @@ import dm.joxel.Objects.GameObject;
 import dm.joxel.Maths.Vector2f;
 import dm.joxel.Engine.Input;
 import dm.joxel.Graphics.Material;
+import dm.joxel.Objects.Cube;
+import java.util.*;
 
 public class Joxel implements Runnable {
 	public Thread game;
 	public static Window window;
 	public final int WIDTH = 1280, HEIGHT = 720;
 	public Shader shader;
+	public final int CHUNK_SIZE = 8;
+	public static List<Vector3f> usedPos = new ArrayList<Vector3f>();
+	private boolean isRunning = false;
 
 	public Renderer renderer;
-	public Mesh mesh = new Mesh(new Vertex[] {
-			//Back face
-			new Vertex(new Vector3f(-0.5f,  0.5f, -0.5f), new Vector2f(0.0f, 0.0f)),
-			new Vertex(new Vector3f(-0.5f, -0.5f, -0.5f), new Vector2f(0.0f, 1.0f)),
-			new Vertex(new Vector3f( 0.5f, -0.5f, -0.5f), new Vector2f(1.0f, 1.0f)),
-			new Vertex(new Vector3f( 0.5f,  0.5f, -0.5f), new Vector2f(1.0f, 0.0f)),
-			
-			//Front face
-			new Vertex(new Vector3f(-0.5f,  0.5f,  0.5f), new Vector2f(0.0f, 0.0f)),
-			new Vertex(new Vector3f(-0.5f, -0.5f,  0.5f), new Vector2f(0.0f, 1.0f)),
-			new Vertex(new Vector3f( 0.5f, -0.5f,  0.5f), new Vector2f(1.0f, 1.0f)),
-			new Vertex(new Vector3f( 0.5f,  0.5f,  0.5f), new Vector2f(1.0f, 0.0f)),
-			
-			//Right face
-			new Vertex(new Vector3f( 0.5f,  0.5f, -0.5f), new Vector2f(0.0f, 0.0f)),
-			new Vertex(new Vector3f( 0.5f, -0.5f, -0.5f), new Vector2f(0.0f, 1.0f)),
-			new Vertex(new Vector3f( 0.5f, -0.5f,  0.5f), new Vector2f(1.0f, 1.0f)),
-			new Vertex(new Vector3f( 0.5f,  0.5f,  0.5f), new Vector2f(1.0f, 0.0f)),
-			
-			//Left face
-			new Vertex(new Vector3f(-0.5f,  0.5f, -0.5f), new Vector2f(0.0f, 0.0f)),
-			new Vertex(new Vector3f(-0.5f, -0.5f, -0.5f), new Vector2f(0.0f, 1.0f)),
-			new Vertex(new Vector3f(-0.5f, -0.5f,  0.5f), new Vector2f(1.0f, 1.0f)),
-			new Vertex(new Vector3f(-0.5f,  0.5f,  0.5f), new Vector2f(1.0f, 0.0f)),
-			
-			//Top face
-			new Vertex(new Vector3f(-0.5f,  0.5f,  0.5f), new Vector2f(0.0f, 0.0f)),
-			new Vertex(new Vector3f(-0.5f,  0.5f, -0.5f), new Vector2f(0.0f, 1.0f)),
-			new Vertex(new Vector3f( 0.5f,  0.5f, -0.5f), new Vector2f(1.0f, 1.0f)),
-			new Vertex(new Vector3f( 0.5f,  0.5f,  0.5f), new Vector2f(1.0f, 0.0f)),
-			
-			//Bottom face
-			new Vertex(new Vector3f(-0.5f, -0.5f,  0.5f), new Vector2f(0.0f, 0.0f)),
-			new Vertex(new Vector3f(-0.5f, -0.5f, -0.5f), new Vector2f(0.0f, 1.0f)),
-			new Vertex(new Vector3f( 0.5f, -0.5f, -0.5f), new Vector2f(1.0f, 1.0f)),
-			new Vertex(new Vector3f( 0.5f, -0.5f,  0.5f), new Vector2f(1.0f, 0.0f)),
-	}, new int[] {
-			//Back face
-			0, 1, 3,	
-			3, 1, 2,	
-			
-			//Front face
-			4, 5, 7,
-			7, 5, 6,
-			
-			//Right face
-			8, 9, 11,
-			11, 9, 10,
-			
-			//Left face
-			12, 13, 15,
-			15, 13, 14,
-			
-			//Top face
-			16, 17, 19,
-			19, 17, 18,
-			
-			//Bottom face
-			20, 21, 23,
-			23, 21, 22
-		}, new Material("resources/Textures/dirt.png"));
-
+	public Mesh mesh = Cube.makeCube(); 
 	public GameObject gameObject = new GameObject(mesh, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
 
-	public Camera camera = new Camera(new Vector3f(0,0,1), new Vector3f(0,0,0));
+	public List<GameObject> gameObjects = new ArrayList<GameObject>();
+
+	public Camera camera = new Camera(new Vector3f(0,0,0), new Vector3f(0,0,0));
 
 	public void start() {
 		game = new Thread(this, "Game");
@@ -102,10 +48,43 @@ public class Joxel implements Runnable {
 		 renderer = new Renderer(shader, window);
 		 mesh.create();
 		 shader.create();
+		 isRunning = true;
 	}
 
 	public void run() {
 		init();
+
+		new Thread(new Runnable() { 
+			public void run() {
+				while(isRunning) {
+					for(int x = (int) camera.getPosition().x - CHUNK_SIZE; x < (int) camera.getPosition().x + CHUNK_SIZE; x++) {
+						 for(int z = (int) camera.getPosition().z - CHUNK_SIZE; z < (int) camera.getPosition().z + CHUNK_SIZE; z++) {
+						 if(!usedPos.contains(new Vector3f(x, 0, z))) {
+							 gameObjects.add(new GameObject(mesh, new Vector3f(x, 0, z), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1)));
+						 usedPos.add(new Vector3f(x, 0, z));
+							  }
+						 }
+					}
+
+					for(int i=0; i < gameObjects.size(); i++) {
+						int distX = (int) (camera.getPosition().x - gameObjects.get(i).getPosition().x);
+						int distZ = (int) (camera.getPosition().z - gameObjects.get(i).getPosition().z);
+						if(distX < 0) {
+							distX = - distX;
+						}
+						if(distZ < 0) {
+							distZ = - distZ;
+						}
+
+						if ((distX > CHUNK_SIZE) || (distZ > CHUNK_SIZE)) {
+							usedPos.remove(gameObjects.get(i).getPosition());
+							gameObjects.remove(i);
+						}
+					}
+
+				}
+			} 
+		}).start();
 		
 		while(!window.shouldClose()) {
 			update();
@@ -118,8 +97,9 @@ public class Joxel implements Runnable {
 			if(Input.isKeyDown(GLFW.GLFW_KEY_E)) window.mouseState(true);
 			if(Input.isKeyDown(GLFW.GLFW_KEY_Q)) window.mouseState(false);
 		}
-		
+		isRunning = false;
 		close();
+		//chunk.stop();
 	}
 
 	private void close() {
@@ -132,12 +112,14 @@ public class Joxel implements Runnable {
 		 // System.out.println("Update");
 		 window.update();
 
-		 gameObject.update();
-		 camera.update(gameObject);
+		 for(GameObject gameObject: gameObjects) {
+			gameObject.update();
+		 }		 
+		 camera.update();
 	}
 
 	public void render() {
-		 renderer.renderMesh(gameObject, camera);
+		 renderer.renderObjects(gameObjects, camera);
 		 // System.out.println("Render");
 		 window.swapBuffers();
 	}
